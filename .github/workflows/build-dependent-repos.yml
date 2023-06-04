@@ -1,0 +1,28 @@
+# GitHub action to build repos that are dependent on this library
+# https://github.com/Andy4495/Template-Repo/blob/main/.github/workflows/build-dependent-repos.yml
+name: Build Dependent Repos
+
+on: 
+  release:
+    types: [published,edited]
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Message to display in job summary
+        required: false
+        type: string
+
+jobs:
+  build-dependent-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger build on <repo-name>
+        run: |
+          curl -X POST https://api.github.com/repos/Andy4495/<repo-name>/actions/workflows/arduino-compile-sketches.yml/dispatches -H "Accept: application/vnd.github.v3+json" -H "Authorization: token ${{ secrets.FORCE_REBUILD }}" -d '{"ref":"main", "inputs":{"message":"Triggered by ${{ github.repository }} from ${{ github.workflow }} workflow run number ${{ github.run_number }}"}}'
+      - name: Print event to job summary 
+        run: | 
+          echo Event name: ${{ github.event_name }} >$GITHUB_STEP_SUMMARY
+      - name: Print workflow_dispatch message to job summary 
+        if: ${{ inputs.message }}
+        run: |
+          echo ${{ inputs.message }} >>$GITHUB_STEP_SUMMARY     

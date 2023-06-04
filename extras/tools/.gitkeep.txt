@@ -1,0 +1,3 @@
+The ".gitkeep" file is a way to force git to track empty directories. 
+
+This file may be removed once other files are created in this directory. 
