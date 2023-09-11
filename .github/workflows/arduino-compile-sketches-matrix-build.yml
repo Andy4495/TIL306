@@ -47,7 +47,7 @@ jobs:
  
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Clone compile-sketches to get python version (using nektos/act locally)
         if: ${{ env.ACT }}
         run: cd /tmp; git clone 'https://github.com/arduino/compile-sketches'
