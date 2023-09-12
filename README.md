@@ -53,7 +53,7 @@ Currently, only single-digit configurations are supported. **Future updates to t
 
 ## Example Sketches
 
-**EX1-Single-Digit.ino**  
+**EX1_Single_Digit.ino**  
 Runs through various display control examples.
 
 ## Device Pinout
