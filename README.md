@@ -4,6 +4,8 @@
 
 This library can be used to control Texas Instruments TIL306 and TIL307 numeric LED displays.
 
+Currently, only single-digit configurations are supported. **Future updates to the library will support multiple digits.**
+
 ## Usage
 
 *Refer to the sketches in the `examples` folder.*
@@ -14,10 +16,12 @@ This library can be used to control Texas Instruments TIL306 and TIL307 numeric 
     #include "TIL306.h"
     ```
 
-2. Instantiate the object. There are multiple constructor forms, depending on the configuration:
+2. Instantiate the object.
+
+    For single-digit configurations:
 
     ```C++
-    myLED = TIL306(type param1, type param2);
+    myLED = TIL306(byte BI, byte CLR, byte CLK, byte DP, byte LS);
     ```
 
 3. Initialize the object:
@@ -26,29 +30,31 @@ This library can be used to control Texas Instruments TIL306 and TIL307 numeric 
     myLED.begin();
     ```
 
-4. Explain useful methods:
+4. Prepare display:
 
-    ```C++
-    method1(int param1);   // Gets the data, etc ...
-    method2(char param2);  // Process the data, etc ...
-    method3();             // Formats the data, etc ...
+    ```c++
+    myLED.blank(false);        // turns on the display
+    myLED.latch_strobe(true);  // sets display to match counter
     ```
 
-5. See the library source code and example sketches for other available methods and usage.
+5. Explain useful methods:
+
+    ```C++
+    void count(byte val);  // increments the display by val counts
+    void blank(bool v);    // true = display off ; false = display on
+    void clear(bool v);    // true = set counter to zero ; false = normal counting
+    void clear_counter();  // sends a pulse to clear the counter
+    void decimal_point(bool v); // right-most decimal point on (true) / off (false)
+    void decimal_point(byte digit, bool v); // Multi-digit configurations
+    void latch_strobe(bool v); // true = display matches counter ; false = counter updates without changing display
+    void write(uint32_t val);  // write val to the display right-justified; extra digits truncated
+    void pulse_counter(bool v); // set display to act like a pulse counter; rising edge clock increments the display
+    ```
 
 ## Example Sketches
 
-**EX1 - Example sketch name**  
-Describe the example sketch
-
-**EX2 - Example sketch name**  
-Describe the example sketch
-
-## Implementation Details
-
-Write up specific implementation details of the library which could be useful to the more advanced user.
-
-Also, this section can be used to remind you of why you made certain design decisions in the code.
+**EX1-Single-Digit.ino**  
+Runs through various display control examples.
 
 ## Device Pinout
 
@@ -61,13 +67,13 @@ Internal to the LED, there is a BCD counter that is updated by the `CLK` signal.
 |  3  |   Out  | `QD`          | BCD data that drives the decoder. The library does not use this signal.                         |
 |  4  |   Out  | `QA`          | BCD data that drives the decoder. The library does not use this signal.                         |
 |  5  |   In   | `/LS`         | LOW: Counter data drives LED decoder latches. HIGH: Counter operated independent of latches.    |
-|  6  |   In   | `/RBI`        | Used in multi-digit configurations. For single-digit operation, tie to GND.                     |
+|  6  |   In   | `/RBI`        | Used in multi-digit configurations. The library does not use this signal.                    |
 |  7  |   Out  | `MAX-COUNT`   | Used in multi-digit configurations. The library does not use this signal.                       |
 |  8  |   Pwr  | `GND`         | Device ground connection.                                                                       |
-|  9  |   In   | `/PCEI`       | Used in multi-digit configurations. For single-digit operation, tie to GND.                     |
-| 10  |   In   | `/SCEI`       | Used in multi-digit configurations. For single-digit operation, tie to GND.                     |
+|  9  |   In   | `/PCEI`       | Used in multi-digit configurations. The library does not use this signal.                     |
+| 10  |   In   | `/SCEI`       | Used in multi-digit configurations. The library does not use this signal.                    |
 | 11  |   Out  | `RBO`         | Used in multi-digit configurations. The library does not use this signal.                       |
-| 12  |   In   | `/CLR`        | HIGH: Normal operation. LOW: Resets and holds counter at zero.                                  |
+| 12  |   In   | `/CLR`        | HIGH: Normal operation. LOW: Reset and hold counter at zero.                                  |
 | 13  |   In   | `DP`          | HIGH: Turn on decimal point (if display is not blanked). LOW: Turn off decimal point.           |
 | 14  |   In   | `BI`          | LOW: Normal operation. HIGH: Blank the display; set `RBO` output LOW.                           |
 | 15  |   In   | `CLK`         | RISING EDGE: Increment the counter (as long as `/PCEI` and `/SCEI` are LOW and `/CLR` is HIGH). |
@@ -75,23 +81,17 @@ Internal to the LED, there is a BCD counter that is updated by the `CLK` signal.
 
 TIL506 has the decimal point on the left and TIL507 has decimal point on the right. Otherwise, the displays are the same.
 
-The following signals are generally the only ones that need to be controlled with the library, and depending on the configuration, not all of these need to be used:
+The following signals are the only ones that can be controlled with the library. Not all of these are needed for every configuration:
 
 ```text
 CLK
 /LS
 BI
 /CLR
+DP
 ```
 
-The library may be configured to control the other input signals. This is generally not necessary because these signals are typically connected to other display modules to create a cascaded multi-digit display:
-
-```text
-MAX-COUNT
-/RBI
-/PCEI
-/SCEI
-```
+Other signals, while not controlled by the library, require specific connections depending on the configuration. Some configurations are described below. For others, consult the device [data sheet][1] and [application notes][3]
 
 ## Typical Configurations
 
@@ -231,8 +231,6 @@ Connect the pins as follows:
 2. /// Add explanation on how muti-digit decimal points are controlled by the library.
 
 ## References
-
-Summary of reference documents and web pages that are relevant to using or understanding this repo. Also include any related hardware spec sheets.
 
 - TIL306/307 [datasheet][1]
 - [*The Optoelectronics Data Book for Design Engineers*][3] by Texas Instruments
