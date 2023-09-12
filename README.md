@@ -1,5 +1,6 @@
 # TIL306 / TIL307 Library
 
+<!-- markdown-link-check-disable-next-line -->
 [![Check Markdown Links](https://github.com/Andy4495/IIL30x/actions/workflows/CheckMarkdownLinks.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml)
 
 This library can be used to control Texas Instruments TIL306 and TIL307 numeric LED displays.
