@@ -45,11 +45,8 @@ Currently, only single-digit configurations are supported. **Future updates to t
     void blank(bool v);    // true = display off ; false = display on
     void clear(bool v);    // true = set counter to zero ; false = normal counting
     void clear_counter();  // sends a pulse to clear the counter
-    void decimal_point(bool v); // right-most decimal point on (true) / off (false)
-    void decimal_point(byte digit, bool v); // Multi-digit configurations
     void latch_strobe(bool v); // true = display matches counter ; false = counter updates without changing display
     void write(uint32_t val);  // write val to the display right-justified; extra digits truncated
-    void pulse_counter(bool v); // set display to act like a pulse counter; rising edge clock increments the display
     ```
 
 ## Example Sketches
@@ -68,14 +65,14 @@ Internal to the LED, there is a BCD counter that is updated by the `CLK` signal.
 |  3  |   Out  | `QD`          | BCD data that drives the decoder. The library does not use this signal.                         |
 |  4  |   Out  | `QA`          | BCD data that drives the decoder. The library does not use this signal.                         |
 |  5  |   In   | `/LS`         | LOW: Counter data drives LED decoder latches. HIGH: Counter operated independent of latches.    |
-|  6  |   In   | `/RBI`        | Used in multi-digit configurations. The library does not use this signal.                    |
+|  6  |   In   | `/RBI`        | Used in multi-digit configurations. The library does not use this signal.                       |
 |  7  |   Out  | `MAX-COUNT`   | Used in multi-digit configurations. The library does not use this signal.                       |
 |  8  |   Pwr  | `GND`         | Device ground connection.                                                                       |
-|  9  |   In   | `/PCEI`       | Used in multi-digit configurations. The library does not use this signal.                     |
-| 10  |   In   | `/SCEI`       | Used in multi-digit configurations. The library does not use this signal.                    |
+|  9  |   In   | `/PCEI`       | Used in multi-digit configurations. The library does not use this signal.                       |
+| 10  |   In   | `/SCEI`       | Used in multi-digit configurations. The library does not use this signal.                       |
 | 11  |   Out  | `RBO`         | Used in multi-digit configurations. The library does not use this signal.                       |
-| 12  |   In   | `/CLR`        | HIGH: Normal operation. LOW: Reset and hold counter at zero.                                  |
-| 13  |   In   | `DP`          | HIGH: Turn on decimal point (if display is not blanked). LOW: Turn off decimal point.           |
+| 12  |   In   | `/CLR`        | HIGH: Normal operation. LOW: Reset and hold counter at zero.                                    |
+| 13  |   In   | `DP`          | Decimal point control (HIGH=ON). The library does not use this signal.                          |
 | 14  |   In   | `BI`          | LOW: Normal operation. HIGH: Blank the display; set `RBO` output LOW.                           |
 | 15  |   In   | `CLK`         | RISING EDGE: Increment the counter (as long as `/PCEI` and `/SCEI` are LOW and `/CLR` is HIGH). |
 | 16  |   Pwr  | `Vcc`         | Device 5 volt power connection. Each display may draw up to 200 mA with all segments on.        |
@@ -89,8 +86,9 @@ CLK
 /LS
 BI
 /CLR
-DP
 ```
+
+The decimal point signal (DP) is not controlled by the library. Use a digital output pin to turn it on and off.
 
 Other signals, while not controlled by the library, require specific connections depending on the configuration. Some configurations are described below. For others, consult the device [data sheet][1] and [application notes][3]
 

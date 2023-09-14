@@ -16,32 +16,26 @@
 #include "TIL306.h"
 
 // Constructor with all possible pins
-TIL306::TIL306(byte num_digits, byte CLK,  byte BI, byte CLR, byte* dp_array, byte LS) {
+TIL306::TIL306(byte num_digits, byte CLK,  byte BI, byte CLR, byte LS) {
   _clk  = CLK;
   _bi   = BI;
   _clr  = CLR;
-  _dp   = dp_array;
   _ls   = LS;
 
   _num_digits = num_digits;
-
 }
 
 // Constructor for single digit configuration
 // BI can be set to NO_PIN if the pin is hard-wired to Vcc.
-// DP can be set to NO_PIN. Tie pin to Vcc to turn on DP, to GND to turn off DP.
 // LS can be set to NO_PIN if the pin is hard-wired to GND.
 // 
-TIL306::TIL306(byte BI, byte CLR, byte CLK, byte DP, byte LS) {
+TIL306::TIL306(byte BI, byte CLR, byte CLK, byte LS) {
   _bi  = BI;
   _clk = CLK;
   _clr = CLR;
-  _dp  = new byte;
-  _dp[0]  = DP;
   _ls  = LS; 
 
   _num_digits = 1; 
-
 }
 
 void TIL306::begin() {
@@ -59,13 +53,6 @@ void TIL306::begin() {
   if (_clr != NO_PIN) {
     digitalWrite(_clr, LOW);    // CLR LOW holds counter at zero
     pinMode(_clr, OUTPUT);
-  }
-  for (int i = 0; i < _num_digits; i++)
-  {
-    if (_dp[i] != NO_PIN) {
-      digitalWrite(_dp[i], LOW);     // DP LOW turns off decimal point
-      pinMode(_dp[i], OUTPUT);
-    }
   }
   if (_ls != NO_PIN) {
     digitalWrite(_ls, HIGH);    // LS HIGH data latches are constant (counter independent of latches)
@@ -110,26 +97,6 @@ void TIL306::clear(bool v) {
   }
 }
 
-// Single-digit setup
-// true = signal high = decimal point on
-void TIL306::decimal_point(bool v) {
-  if (_dp[0] != NO_PIN) {
-    if (v) digitalWrite(_dp[0], HIGH);
-    else   digitalWrite(_dp[0], LOW);
-  }
-}
-
-// Multi-digit setup
-// true = signal high = decimal point on
-void TIL306::decimal_point(byte digit, bool v) {
-  if (digit < _num_digits) {
-    if (_dp[0] != NO_PIN) {
-      if (v) digitalWrite(_dp[digit], HIGH);
-      else   digitalWrite(_dp[digit], LOW);
-    }
-  }
-}
-
 // true = signal low = data follows latches ; false = signal high = latches held, counter counts
 void TIL306::latch_strobe(bool v) {
   if (_ls != NO_PIN) {
@@ -139,11 +106,6 @@ void TIL306::latch_strobe(bool v) {
 }
 
 void TIL306::write(uint32_t val) {
-
-}
-
-// Sets up display so that it acts like a pulse counter
-void TIL306::pulse_counter(bool v) {
 
 }
 

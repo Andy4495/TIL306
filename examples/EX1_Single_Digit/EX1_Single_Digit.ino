@@ -11,10 +11,13 @@
 
 #include "TIL306.h"
 
+/* Pin used to control the decimal point */
+#define DP 14 
+
 // Be sure to use the correct pin numbers for your setup.
 // Use PWM output for BI to control intensity, otherwise BI just controls display on or off
-//            BI, CLR, CLK,  DP,  LS
-TIL306 myLED( 19,  12,  15,  14,  13 );
+//            BI, CLR, CLK,  LS
+TIL306 myLED( 19,  12,  15,  13 );
 
 unsigned long prev_millis = 0;
 #define DELAY_MS 1000
@@ -26,6 +29,9 @@ void setup() {
     Serial.begin(9600);
     Serial.println("");
     Serial.println("TIL30x Library Example Sketch 1: Display a Single Digit.");
+
+    digitalWrite(DP, LOW);
+    pinMode(DP, OUTPUT);
 
     myLED.begin();
     myLED.blank(false);
@@ -64,12 +70,12 @@ void loop() {
                 break;
             case 5: 
                 Serial.println("Turning on decimal point...");
-                myLED.decimal_point(true);
+                digitalWrite(DP, HIGH);
                 next_state();
                 break;
             case 6: 
                 Serial.println("Turning off decimal point..."); 
-                myLED.decimal_point(false);
+                digitalWrite(DP, LOW);
                 next_state();
                 break;
             case 7: 
