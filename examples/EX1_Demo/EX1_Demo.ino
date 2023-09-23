@@ -5,7 +5,7 @@
    Test library with a single TIL306/307 chip.
 
    01-May-2023 - Andy4495 - Original
-   99-Sep-2023 - Andy4495 - Updates for library changes.
+   22-Sep-2023 - Andy4495 - Updates for library changes.
 
 */
 

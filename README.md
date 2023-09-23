@@ -5,8 +5,6 @@
 
 This library can be used to control Texas Instruments TIL306 and TIL307 numeric LED displays.
 
-Currently, only single-digit configurations are supported. **Future updates to the library will support multiple digits.**
-
 ## Usage
 
 *Refer to the sketches in the `examples` folder.*
@@ -18,8 +16,6 @@ Currently, only single-digit configurations are supported. **Future updates to t
     ```
 
 2. Instantiate the object.
-
-    For single-digit configurations:
 
     ```C++
     myLED = TIL306(byte BI, byte CLR, byte CLK, byte DP, byte LS);
@@ -38,20 +34,22 @@ Currently, only single-digit configurations are supported. **Future updates to t
     myLED.latch_strobe(true);  // sets display to match counter
     ```
 
-5. Explain useful methods:
+5. Methods to control the display:
 
     ```C++
-    void count(byte val);  // increments the display by val counts
-    void blank(bool v);    // true = display off ; false = display on
-    void clear(bool v);    // true = set counter to zero ; false = normal counting
-    void clear_counter();  // sends a pulse to clear the counter
-    void latch_strobe(bool v); // true = display matches counter ; false = counter updates without changing display
-    void write(uint32_t val);  // write val to the display right-justified; extra digits truncated
+    void increment (byte val);  // increments the display by val counts
+    void pwm(byte val);         // 255 = display fully on ; 0 = display off
+    void blank(bool v);         // true = display off ; false = display on
+    void clear(bool v);         // true = set counter to zero ; false = normal counting
+    void clear_counter();       // sends a low-high pulse to clear the counter
+    void latch_strobe(bool v);  // true = display matches counter ; false = counter updates without changing display
+    void print(uint32_t val);   // write val to the display right-justified; extra digits truncated
+    void print(const char* s);  // Converts s to an integer and displays the integer
     ```
 
 ## Example Sketches
 
-**EX1_Single_Digit.ino**  
+**EX1_Demo.ino**  
 Runs through various display control examples.
 
 ## Device Pinout
@@ -77,7 +75,7 @@ Internal to the LED, there is a BCD counter that is updated by the `CLK` signal.
 | 15  |   In   | `CLK`         | RISING EDGE: Increment the counter (as long as `/PCEI` and `/SCEI` are LOW and `/CLR` is HIGH). |
 | 16  |   Pwr  | `Vcc`         | Device 5 volt power connection. Each display may draw up to 200 mA with all segments on.        |
 
-TIL506 has the decimal point on the left and TIL507 has decimal point on the right. Otherwise, the displays are the same.
+TIL306 has the decimal point on the left and TIL307 has decimal point on the right. Otherwise, the displays are the same.
 
 The following signals are the only ones that can be controlled with the library. Not all of these are needed for every configuration:
 

@@ -3,7 +3,7 @@
    https://github.com/Andy4495/TIL306
 
    01-May-2023 - Andy4495 - Original
-   11-Sep-2023 - Andy4495 - Fill in more code
+   22-Sep-2023 - Andy4495 - Fill in more code
 
 */
 
@@ -29,6 +29,7 @@ public:
   void begin();               // Set everything to default values
   void increment(byte val);   // toggles CLK (rising edge) val times
   void pwm(byte val);         // 255 = signal low = display fully on ; 0 = signal high = display off
+                              // BI must be configured with a PWM-capable pin for the pwm() method to work
   void blank(bool v);         // true = signal high = display off ; false = signal low = display on
   void clear(bool v);         // true = signal low = counter clear ; false = signal high = normal counting
   void clear_counter();       // sends a low-high pulse to clear the counter

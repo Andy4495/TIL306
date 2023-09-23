@@ -3,7 +3,7 @@
    https://github.com/Andy4495/TIL306
 
    01-May-2023 - Andy4495 - Original
-   11-Sep-2023 - Andy4495 - Fill in more code
+   22-Sep-2023 - Andy4495 - Fill in more code
 
    Pins SCEI, PCEI, and RBI are not controlled by the library, since
    the datasheet and application notes indicate specific hardware 
