@@ -15,16 +15,6 @@
 
 #include "TIL306.h"
 
-// Constructor with all possible pins
-TIL306::TIL306(byte num_digits, byte CLK,  byte BI, byte CLR, byte LS) {
-  _clk  = CLK;
-  _bi   = BI;
-  _clr  = CLR;
-  _ls   = LS;
-
-  _num_digits = num_digits;
-}
-
 // Constructor for single digit configuration
 // BI can be set to NO_PIN if the pin is hard-wired to Vcc.
 // LS can be set to NO_PIN if the pin is hard-wired to GND.
@@ -34,18 +24,13 @@ TIL306::TIL306(byte BI, byte CLR, byte CLK, byte LS) {
   _clk = CLK;
   _clr = CLR;
   _ls  = LS; 
-
-  _num_digits = 1; 
 }
 
 void TIL306::begin() {
   // Set up all the outputs to default levels
   // Default levels are generally idle or disabled states
   // 
-  if (_clk != NO_PIN) {
-    digitalWrite(_clk, HIGH);   // CLK is active on low->high transitions
-    pinMode(_clk, OUTPUT);
-  }
+  pinMode(_clk, OUTPUT);
   if (_bi != NO_PIN) {
     digitalWrite(_bi, HIGH);    // BI HIGH turns off the display
     pinMode(_bi, OUTPUT);
@@ -61,9 +46,10 @@ void TIL306::begin() {
 }
 
 // toggles CLK (rising edge) val times 
-void TIL306::count(byte val) {
-  byte i;
-  for (i = 0; i < val; i++) toggle_clk();
+void TIL306::increment(byte val) {
+  for (; val > 0; val--) { 
+    toggle_clk();
+  }
 }
 
 // PWM pin
@@ -82,18 +68,18 @@ void TIL306::blank(bool v) {
   }
 }
 
-// Sends a pulse to clear the counter 
-void TIL306::clear_counter() {
-  if (_clr != NO_PIN) {
-    digitalWrite(_clr, LOW);
-    digitalWrite(_clr, HIGH);
-  }
-}
-
 void TIL306::clear(bool v) {
   if (_clr != NO_PIN) {
     if (v) digitalWrite(_clr, LOW);
     else digitalWrite(_clr, HIGH);
+  }
+}
+
+// Sends a low-high pulse to clear the counter 
+void TIL306::clear_counter() {
+  if (_clr != NO_PIN) {
+    digitalWrite(_clr, LOW);
+    digitalWrite(_clr, HIGH);
   }
 }
 
@@ -105,8 +91,17 @@ void TIL306::latch_strobe(bool v) {
   }
 }
 
-void TIL306::write(uint32_t val) {
+void TIL306::print(uint32_t val) {
+  clear_counter();
+  latch_strobe(false);
+  increment(val);
+  latch_strobe(true);
+}
 
+void TIL306::print(const char* s) {
+  uint32_t num;
+  num = atoi(s);
+  print(num);
 }
 
 void TIL306::toggle_clk() {

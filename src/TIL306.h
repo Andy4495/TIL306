@@ -16,29 +16,30 @@ class TIL306 {
 public:
   enum {NO_PIN = 255};
 
-  // Constructor for all pins
-  // Use "TIL306::NO_PIN" for pins that are not tied to the microcontroller.
-  TIL306(byte num_digits, byte CLK,  byte BI, byte CLR, byte LS);
-
-  // Constructor for single-digit configurations
-  // Included for simplicity; can also use above constructor and set num_digits = 1
+  // CLK must be controlled by the library
+  // Use NO_PIN if you hardwire any of the other pins:
+  //   - BI:  May be hardwired LOW to keep the display on all the time. 
+  //          blank() will have no effect.
+  //   - CLR: May be hardwired HIGH for normal counting operation.
+  //          clear() will have no effect.
+  //   - LS:  May be hardwired LOW, but some display flicker may be visible 
+  //          when the display is updated with a new value
   TIL306(byte BI, byte CLR, byte CLK, byte LS);
 
-  void begin(); // Set everything to default values
-  void count(byte val); // toggles CLK (rising edge) val times
-  void pwm(byte val); // 255 = signal low = display fully on ; 0 = signal high = display off
-  void blank(bool v); // true = signal high = display off ; false = signal low = display on
-  void clear(bool v); // true = signal low = counter clear ; false = signal high = normal counting
-  void clear_counter(); // sends a pulse to clear the counter
-  void latch_strobe(bool v); // true = signal low = data follows latches ; false = signal high = latches held, counter counts
-  void write(uint32_t val);
+  void begin();               // Set everything to default values
+  void increment(byte val);   // toggles CLK (rising edge) val times
+  void pwm(byte val);         // 255 = signal low = display fully on ; 0 = signal high = display off
+  void blank(bool v);         // true = signal high = display off ; false = signal low = display on
+  void clear(bool v);         // true = signal low = counter clear ; false = signal high = normal counting
+  void clear_counter();       // sends a low-high pulse to clear the counter
+  void latch_strobe(bool v);  // true = signal low = data follows latches ; false = signal high = latches held, counter counts
+  void print(uint32_t val);   // Display val. Most significant digits in excess of display capacity are discarded
+  void print(const char* s);  // Converts s to an integer and displays the integer
 
 private:
   byte _clk, _bi, _clr, _ls;
-  byte _num_digits;
 
   void toggle_clk();
-
 };
 
 #endif
