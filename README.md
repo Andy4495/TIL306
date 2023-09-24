@@ -113,7 +113,7 @@ Connect the pins as follows (pins not listed should be left floating):
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
 | 16      | `VCC`       | +5V                                                     |
 
-### Single Digit Using All Control Pins
+#### Single Digit Using All Control Pins
 
 By using four the control pins, all of the library functionality may be used (including `intensity()` if `BI` is connected to a PWM-capable pin).
 
@@ -138,7 +138,7 @@ Connect the pins as follows:
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
 | 16      | `VCC`       | +5V                           |
 
-### Multi-Digit Display
+#### Multi-Digit Display
 
 Recommended wiring to create a multiple-digit display (from [*The Optoelectronics Data Book for Design Engineers*][3], Texas Instruments, Fifth Edition, p. 238):
 
