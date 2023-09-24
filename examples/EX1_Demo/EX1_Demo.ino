@@ -2,22 +2,27 @@
    TIL306 Library Example Sketch 1: Demo
    https://github.com/Andy4495/TIL306
 
-   Test library with a single TIL306/307 chip.
+   Example usage of all the library methods.
+
+   This example only controls one decimal point, but will demonstrate
+   the use of up to two digits. More digits can be controlled by 
+   increasing the counts in cases 1 and 7 and the display value
+   in cases 8 and 9.
 
    01-May-2023 - Andy4495 - Original
-   22-Sep-2023 - Andy4495 - Updates for library changes.
+   23-Sep-2023 - Andy4495 - Release v1.0.0
 
 */
 
 #include "TIL306.h"
 
-/* Pin used to control the decimal point */
-#define DP 5 
-
 // Be sure to use the correct pin numbers for your setup.
-// Use PWM output for BI to control intensity, otherwise BI just controls display on or off
-//            BI, CLR, CLK,  LS
-TIL306 myLED( 14,  12,  15,  13 );
+// Use PWM output pin for BI to control intensity, otherwise BI just controls display on or off
+//           CLK,  BI, CLR,  LS
+TIL306 myLED( 15,  14,  12,  13 );
+// Pin used to control the decimal point
+// Note that a separate pin is needed for each decimal point
+#define DP 5
 
 unsigned long prev_millis = 0;
 #define DELAY_MS 1000
@@ -43,8 +48,6 @@ void loop() {
         prev_millis = millis();
         switch (state) {
             case 0:
-//                myLED.clear(true);
-//                myLED.clear(false);
                 myLED.clear_counter();
                 next_state();
                 Serial.println("Count 0 - 18");
@@ -57,8 +60,6 @@ void loop() {
                 break;
             case 2: 
                 Serial.println("Resetting counter to 0..."); 
-//                myLED.clear(true);
-//                myLED.clear(false);
                 myLED.clear_counter();
                 next_state();
                 break;
@@ -104,12 +105,12 @@ void loop() {
             case 10:
                 Serial.println("Display at one-third intensity using PWM");
                 Serial.println("BI pin must be configured on a PWM-capable pin to work.");
-                myLED.pwm(85);
+                myLED.intensity(85);
                 next_state();
                 break;
             case 11:
                 Serial.println("Back to full intensity.");
-                myLED.pwm(255);
+                myLED.intensity(255);
                 next_state();
                 break;
             default:

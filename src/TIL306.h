@@ -3,7 +3,7 @@
    https://github.com/Andy4495/TIL306
 
    01-May-2023 - Andy4495 - Original
-   22-Sep-2023 - Andy4495 - Fill in more code
+   23-Sep-2023 - Andy4495 - Release v1.0.0
 
 */
 
@@ -24,11 +24,11 @@ public:
   //          clear() will have no effect.
   //   - LS:  May be hardwired LOW, but some display flicker may be visible 
   //          when the display is updated with a new value
-  TIL306(byte BI, byte CLR, byte CLK, byte LS);
+  TIL306(byte CLK, byte BI, byte CLR, byte LS);
 
   void begin();               // Set everything to default values
   void increment(byte val);   // toggles CLK (rising edge) val times
-  void pwm(byte val);         // 255 = signal low = display fully on ; 0 = signal high = display off
+  void intensity(byte val);   // 255 = signal low = display fully on ; 0 = signal high = display off
                               // BI must be configured with a PWM-capable pin for the pwm() method to work
   void blank(bool v);         // true = signal high = display off ; false = signal low = display on
   void clear(bool v);         // true = signal low = counter clear ; false = signal high = normal counting

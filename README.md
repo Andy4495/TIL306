@@ -1,13 +1,38 @@
 # TIL306 / TIL307 Library
 
-<!-- markdown-link-check-disable-next-line -->
-[![Check Markdown Links](https://github.com/Andy4495/IIL30x/actions/workflows/CheckMarkdownLinks.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml)
+[![Arduino Compile Sketches](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml)
+[![Check Markdown Links](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml)
 
-This library can be used to control Texas Instruments TIL306 and TIL307 numeric LED displays.
+This library can be used to control Texas Instruments TIL306 (decimal point on left) and TIL307 (decimal point on right) numeric LED displays.
 
-## Usage
+## Hardware Connections
 
-*Refer to the sketches in the `examples` folder.*
+### Control Pins
+
+As few as one or as many as four output pins are needed to control the display, as noted below:
+
+| LED Pin | Signal | Name         | Required | Notes                                                     |
+| ------- | ------ | ------------ | ---------| --------------------------------------------------------- |
+|    15   | `CLK`  | Clock        |    Yes   | Required by the library to control the display.           |
+|    14   |  `BI`  | Blanking     |     No   | May be hardwired LOW to keep the display on all the time. |
+|    12   |  `CLR` | Clear        |     No   | May be hardwired HIGH, but the display cannot be forced to zero. |
+|     5   |  `LS`  | Latch Strobe |     No   | May be hardwired LOW, but some display flicker may be visible when the display is updated with a new value. |
+
+If any of the optional pins are hardwired, use `TIL306::NO_PIN` as the pin number in the constructor.
+
+### Decimal Points
+
+The decimal point (LED pin 13) is not controlled by the library, and may be controlled with a regular `OUTPUT` pin separately. One pin is needed for each LED digit. If you do not need to control the decimal point, tie it LOW to keep it off or HIGH to keep it on (do not leave it floating).
+
+### Controlling Display Intensity with PWM
+
+To control the level of the display's intensity, connect a PWM-capable pin to `BI`. The `intensity()` method can be use to set the brightness level, with `255` being brightes and `0` turning the display off.
+
+If a non-PWM-capable pin is connected to `BI`, then use the `blank()` method to turn the display on (`true`) or off (`false`).
+
+## Library Usage
+
+*Refer to the sketch in the [`examples`][4] folder.*
 
 1. Include the library header file:  
 
@@ -18,161 +43,100 @@ This library can be used to control Texas Instruments TIL306 and TIL307 numeric 
 2. Instantiate the object.
 
     ```C++
-    myLED = TIL306(byte BI, byte CLR, byte CLK, byte DP, byte LS);
+    myLED = TIL306(byte CLK, byte BI, byte CLR, byte LS);
     ```
 
-3. Initialize the object:
+3. Initialize and prepare the display:
 
     ```C++
-    myLED.begin();
+    myLED.begin();             // Initialize the objec
+    myLED.blank(false);        // Turn on the display
+    myLED.latch_strobe(true);  // Display latch is loaded with counter value
     ```
 
-4. Prepare display:
-
-    ```c++
-    myLED.blank(false);        // turns on the display
-    myLED.latch_strobe(true);  // sets display to match counter
-    ```
-
-5. Methods to control the display:
+4. Methods to control the display:
 
     ```C++
-    void increment (byte val);  // increments the display by val counts
-    void pwm(byte val);         // 255 = display fully on ; 0 = display off
-    void blank(bool v);         // true = display off ; false = display on
-    void clear(bool v);         // true = set counter to zero ; false = normal counting
+    void increment(byte val);   // increments the display by val counts
+    void intensity(byte val);   // 255 = display fully on, 0 = display off
+    void blank(bool v);         // true = display off, false = display on
+    void clear(bool v);         // true = set counter to zero, false = normal counting
     void clear_counter();       // sends a low-high pulse to clear the counter
-    void latch_strobe(bool v);  // true = display matches counter ; false = counter updates without changing display
+    void latch_strobe(bool v);  // true = display matches counter, false = counter updates without changing display
     void print(uint32_t val);   // write val to the display right-justified; extra digits truncated
     void print(const char* s);  // Converts s to an integer and displays the integer
     ```
 
-## Example Sketches
+## Example Sketch
 
 **EX1_Demo.ino**  
-Runs through various display control examples.
+Runs through various display control examples using all of the library methods.
 
-## Device Pinout
+## Device Operation
 
-Internal to the LED, there is a BCD counter that is updated by the `CLK` signal. This counter data is loaded into the LED segment display latches depending on the `/LS` signal. Other signals are used to further control the display and allow for multi-digit configurations.
+### Counter and Latch
 
-| Pin | In/Out | Signal Name   | Description                                                                                     |
-| --- | ------ | ------------- | ----------------------------------------------------------------------------------------------- |
-|  1  |   Out  | `QB`          | BCD data that drives the decoder. The library does not use this signal.                         |
-|  2  |   Out  | `QC`          | BCD data that drives the decoder. The library does not use this signal.                         |
-|  3  |   Out  | `QD`          | BCD data that drives the decoder. The library does not use this signal.                         |
-|  4  |   Out  | `QA`          | BCD data that drives the decoder. The library does not use this signal.                         |
-|  5  |   In   | `/LS`         | LOW: Counter data drives LED decoder latches. HIGH: Counter operated independent of latches.    |
-|  6  |   In   | `/RBI`        | Used in multi-digit configurations. The library does not use this signal.                       |
-|  7  |   Out  | `MAX-COUNT`   | Used in multi-digit configurations. The library does not use this signal.                       |
-|  8  |   Pwr  | `GND`         | Device ground connection.                                                                       |
-|  9  |   In   | `/PCEI`       | Used in multi-digit configurations. The library does not use this signal.                       |
-| 10  |   In   | `/SCEI`       | Used in multi-digit configurations. The library does not use this signal.                       |
-| 11  |   Out  | `RBO`         | Used in multi-digit configurations. The library does not use this signal.                       |
-| 12  |   In   | `/CLR`        | HIGH: Normal operation. LOW: Reset and hold counter at zero.                                    |
-| 13  |   In   | `DP`          | Decimal point control (HIGH=ON). The library does not use this signal.                          |
-| 14  |   In   | `BI`          | LOW: Normal operation. HIGH: Blank the display; set `RBO` output LOW.                           |
-| 15  |   In   | `CLK`         | RISING EDGE: Increment the counter (as long as `/PCEI` and `/SCEI` are LOW and `/CLR` is HIGH). |
-| 16  |   Pwr  | `Vcc`         | Device 5 volt power connection. Each display may draw up to 200 mA with all segments on.        |
+Internal to the LED, there is a BCD counter that is updated by the `CLK` signal. Each rising clock edge increments the counter by one. This counter data is loaded into the LED segment display latches depending on the `LS` signal. By controlling the `LS` signal, the display can be updated to an arbitray number without having each intermediate value display while clocking in the new digit.
 
-TIL306 has the decimal point on the left and TIL307 has decimal point on the right. Otherwise, the displays are the same.
+### Other Control Signals
 
-The following signals are the only ones that can be controlled with the library. Not all of these are needed for every configuration:
+The other control signals on the LED are not used by the library. Consult the [datasheet][1] and [application note][3] for details. A few common configurations are described below.
 
-```text
-CLK
-/LS
-BI
-/CLR
-```
+None of the input signals on the LED should be left floating; each of them should be tied either HIGH or LOW depending on the configuration.
 
-The decimal point signal (DP) is not controlled by the library. Use a digital output pin to turn it on and off.
+### Typical Configurations
 
-Other signals, while not controlled by the library, require specific connections depending on the configuration. Some configurations are described below. For others, consult the device [data sheet][1] and [application notes][3]
+Below are some typical display configurations that can be used with the library, from a minimal-pin single digit operation all the way to full control of a multi-digit diplay.
 
-## Typical Configurations
+#### Single Digit Counter with Minimal Pins
 
-Below are some typical display configurations that can be used with the library, from a minimal-pin single digit operation all the way to full control of a multi-digit diplay. Other configurations are also possible; consult the device datasheet for further information.
-
-### Single Digit Counter; Display Always On
-
-This configuration uses the least amount of pins and creates a counter that cycles from 0 - 9 with each rising clock edge.
+This configuration uses a single I/O pin. The display is always on and the latch always displays what's in the counter, meaning that there may be some flicker visible on the display when updating the display by more than one. Also, the display cannot be forced to zero, so this configuration is best used for counting clock pulses rather than displaying arbitrary numbers.
 
 Use the constructor:
 
 ```cpp
-myLED = TIL306(clk_pin);
+myLED = TIL306(clk_pin, TIL306::NO_PIN, TIL306::NO_PIN, TIL306::NO_PIN);
 ```
 
-Connect the pins as follows:
+Connect the pins as follows (pins not listed should be left floating):
 
-| LED Pin | Signal Name | Connect To                                              |
+| LED Pin | Signal Name | Connect To                    |
 | ------- | ----------- | ------------------------------------------------------- |
 |  5      | `/LS`       | GND                                                     |
-|  6      | `/RBI`      | GND                                                     |
+|  6      | `/RBI`      | +5V                                                     |
 |  8      | `GND`       | GND                                                     |
 |  9      | `/PCEI`     | GND                                                     |
 | 10      | `/SCEI`     | GND                                                     |
 | 12      | `/CLR`      | +5V                                                     |
-| 13      | `DP`        | HIGH: On, LOW: Off                                      |
+| 13      | `DP`        | HIGH: On, LOW: Off            |
 | 14      | `BI`        | GND                                                     |
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
 | 16      | `VCC`       | +5V                                                     |
 
-### Single Digit Counter; Display Intensity Controlled By Library
+### Single Digit Using All Control Pins
 
-Similar to above and also allows the library to control whether the display is on or off, and brightness level if connected to a PWM pin.
-
-Use the constructor:
-
-```cpp
-myLED = TIL306(clk_pin, bi_pin);            // Decimal point not controlled by library
-myLED = TIL306(clk_pin, bi_pin, dp_pin);    // Decimal point controlled by library
-```
-
-Connect the pins as follows:
-
-| LED Pin | Signal Name | Connect To                                              |
-| ------- | ----------- | ------------------------------------------------------- |
-|  5      | `/LS`       | GND                                                     |
-|  6      | `/RBI`      | GND                                                     |
-|  8      | `GND`       | GND                                                     |
-|  9      | `/PCEI`     | GND                                                     |
-| 10      | `/SCEI`     | GND                                                     |
-| 12      | `/CLR`      | +5V                                                     |
-| 13      | `DP`        | See [Note 1](#notes) below.                             |
-| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor.  |
-| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
-| 16      | `VCC`       | +5V                                                     |
-
-### Single Digit With Full Control
-
-Display can be configured as a counter or directly display any single decimal digit.
+By using four the control pins, all of the library functionality may be used (including `intensity()` if `BI` is connected to a PWM-capable pin).
 
 Use the constructor:
 
 ```cpp
-// Decimal point not controlled by library
 myLED = TIL306(clk_pin, bi_pin, clr_pin, ls_pin);
-
-// Decimal point controlled by library
-myLED = TIL306(clk_pin, bi_pin, clr_pin, ls_pin, dp_pin);
 ```
 
 Connect the pins as follows:
 
-| LED Pin | Signal Name | Connect To                                              |
-| ------- | ----------- | ------------------------------------------------------- |
-|  5      | `/LS`       | Arduino output pin defined by ls_pin in constructor.    |
-|  6      | `/RBI`      | GND                                                     |
-|  8      | `GND`       | GND                                                     |
-|  9      | `/PCEI`     | GND                                                     |
-| 10      | `/SCEI`     | GND                                                     |
-| 12      | `/CLR`      | Arduino output pin defined as `clr_pin` in constructor. |
-| 13      | `DP`        | See [Note 1](#notes) below.                             |
-| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor.  |
-| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
-| 16      | `VCC`       | +5V                                                     |
+| LED Pin | Signal Name | Connect To                    |
+| ------- | ----------- | ----------------------------- |
+|  5      | `/LS`       | Arduino output pin defined as `ls_pin` in constructor |
+|  6      | `/RBI`      | +5V                           |
+|  8      | `GND`       | GND                           |
+|  9      | `/PCEI`     | GND                           |
+| 10      | `/SCEI`     | GND                           |
+| 12      | `/CLR`      | Arduino output pin defined as `clr_pin` in constructor                                             |
+| 13      | `DP`        | HIGH: On, LOW: Off            |
+| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor |
+| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
+| 16      | `VCC`       | +5V                           |
 
 ### Multi-Digit Display
 
@@ -180,52 +144,7 @@ Recommended wiring to create a multiple-digit display (from [*The Optoelectronic
 
 ![Cascade][2]
 
-Use the constructor (this defines the common signal lines and the least significant digit):
-
-```cpp
-// Don't control CLR line with library; tie to +5V externally
-myLED = TIL306(clk_pin, bi_pin, TIL306::NO_PIN, ls_pin, dp_pin);
-
-// Control CLR line with library
-myLED = TIL306(clk_pin, bi_pin, clr_pin, ls_pin, dp_pin);
-```
-
-Then, define additional display digits. Digits are added right to left (least significant to most significant). The constructor defined the least significant digit, so the first call to `addDigit` creates the second least significant digit.
-
-```cpp
-myLED.addDigit(dpn_pin);
-```
-
-For example, for a 3 digit display, the following sequence would be used:
-
-```cpp
-// Create overall display object, including least significant digit
-myLED = TIL306(clk_pin, bi_pin, TIL306::NO_PIN, ls_pin, dp_pin);
-// Add "mid-significant" digit
-myLED.addDigit(dp2_pin);
-// Add most significant digit (left-most digit)
-myLED.addDigit(dp3_pin);
-```
-
-Connect the pins as follows:
-
-| LED Pin | Signal Name | Connect To                                              |
-| ------- | ----------- | ------------------------------------------------------- |
-|  5      | `/LS`       | Arduino output pin defined by ls_pin in constructor.    |
-|  6      | `/RBI`      | Most significant digit -> connect RBI to GND. For remaining digits, connect RBI to RBO of the digit to the left. |
-|  8      | `GND`       | GND                                                     |
-|  9      | `/PCEI`     | Least significant digit -> connect PCEI to GND. For remaining digits, connect PCEI together and also to MAX-COUNT of least significant digit. |
-| 10      | `/SCEI`     | Least significant digit -> connect SCEI to GND. For the next least significant digit, connect SCEI to GND. For remaining digits, connect SCEI to MAX-COUNT of digit to the right. |
-| 12      | `/CLR`      | +5V                                                     |
-| 13      | `DP`        | See [Note 2](#notes) below.                             |
-| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor.  |
-| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
-| 16      | `VCC`       | +5V                                                     |
-
-#### Notes
-
-1. DP: /// explanation of controlling or not controlling DP
-2. /// Add explanation on how muti-digit decimal points are controlled by the library.
+Note that the above diagram has the least significant digit `RBI` (LED pin 6) connected to the second least significant digit `RBO` (LED pin 11). This will cause all digits to go blank when displaying zero across all digits. If you would like the value zero to be displayed with a zero in the least significant digit, then hardwire `RBI` HIGH on the least significant digit (and leave `RBO` floating on the second least significant digit).
 
 ## References
 
@@ -239,6 +158,7 @@ The software and other files in this repository are released under what is commo
 [1]: http://cdn.goldmine-elec.com/datasheet/G25577.pdf
 [2]: ./extras/docs/TIL306-N-digit.jpg
 [3]: https://archive.org/details/optoelectronicsd00texa
+[4]: ./examples/
 [100]: https://choosealicense.com/licenses/mit/
 [101]: ./LICENSE.txt
 [//]: # ([200]: https://github.com/Andy4495/TIL306)

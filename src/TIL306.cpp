@@ -3,7 +3,7 @@
    https://github.com/Andy4495/TIL306
 
    01-May-2023 - Andy4495 - Original
-   22-Sep-2023 - Andy4495 - Fill in more code
+   23-Sep-2023 - Andy4495 - Release v1.0.0
 
    Pins SCEI, PCEI, and RBI are not controlled by the library, since
    the datasheet and application notes indicate specific hardware 
@@ -19,7 +19,7 @@
 // BI can be set to NO_PIN if the pin is hard-wired to Vcc.
 // LS can be set to NO_PIN if the pin is hard-wired to GND.
 // 
-TIL306::TIL306(byte BI, byte CLR, byte CLK, byte LS) {
+TIL306::TIL306(byte CLK, byte BI, byte CLR, byte LS) {
   _bi  = BI;
   _clk = CLK;
   _clr = CLR;
@@ -52,10 +52,10 @@ void TIL306::increment(byte val) {
   }
 }
 
-// PWM pin
+// Display intensity with PWM-capable pin
 // 255 = signal low = display fully on ; 0 = signal high = display off
 // values in between control intensity if connected to PWM pin
-void TIL306::pwm(byte val) {
+void TIL306::intensity(byte val) {
   if (_bi != NO_PIN) analogWrite(_bi, 255 - val); 
 }
 
