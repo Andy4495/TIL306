@@ -3,7 +3,7 @@
 [![Arduino Compile Sketches](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml)
 [![Check Markdown Links](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml)
 
-This library can be used to control Texas Instruments TIL306 (decimal point on left) and TIL307 (decimal point on right) numeric LED displays.
+Arduino library to control Texas Instruments TIL306 (decimal point on left) and TIL307 (decimal point on right) numeric LED displays.
 
 ## Hardware Connections
 
@@ -15,7 +15,7 @@ As few as one or as many as four output pins are needed to control the display, 
 | ------- | ------ | ------------ | ---------| --------------------------------------------------------- |
 |    15   | `CLK`  | Clock        |    Yes   | Required by the library to control the display.           |
 |    14   |  `BI`  | Blanking     |     No   | May be hardwired LOW to keep the display on all the time. |
-|    12   |  `CLR` | Clear        |     No   | May be hardwired HIGH, but the display cannot be forced to zero. |
+|    12   | `CLR`  | Clear        |     No   | May be hardwired HIGH, but the display cannot be forced to zero. |
 |     5   |  `LS`  | Latch Strobe |     No   | May be hardwired LOW, but some display flicker may be visible when the display is updated with a new value. |
 
 If any of the optional pins are hardwired, use `TIL306::NO_PIN` as the pin number in the constructor.
@@ -101,17 +101,17 @@ myLED = TIL306(clk_pin, TIL306::NO_PIN, TIL306::NO_PIN, TIL306::NO_PIN);
 Connect the pins as follows (pins not listed should be left floating):
 
 | LED Pin | Signal Name | Connect To                    |
-| ------- | ----------- | ------------------------------------------------------- |
-|  5      | `/LS`       | GND                                                     |
-|  6      | `/RBI`      | +5V                                                     |
-|  8      | `GND`       | GND                                                     |
-|  9      | `/PCEI`     | GND                                                     |
-| 10      | `/SCEI`     | GND                                                     |
-| 12      | `/CLR`      | +5V                                                     |
-| 13      | `DP`        | HIGH: On, LOW: Off            |
-| 14      | `BI`        | GND                                                     |
-| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor. |
-| 16      | `VCC`       | +5V                                                     |
+| ------- | ----------- | ----------------------------- |
+|  5      | `/LS`       | GND                           |
+|  6      | `/RBI`      | Vcc                           |
+|  8      | `GND`       | GND                           |
+|  9      | `/PCEI`     | GND                           |
+| 10      | `/SCEI`     | GND                           |
+| 12      | `/CLR`      | Vcc                           |
+| 13      | `DP`        | Vcc: On, GND: Off             |
+| 14      | `BI`        | GND                           |
+| 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
+| 16      | `VCC`       | Vcc                           |
 
 #### Single Digit Using All Control Pins
 
@@ -128,15 +128,15 @@ Connect the pins as follows:
 | LED Pin | Signal Name | Connect To                    |
 | ------- | ----------- | ----------------------------- |
 |  5      | `/LS`       | Arduino output pin defined as `ls_pin` in constructor |
-|  6      | `/RBI`      | +5V                           |
+|  6      | `/RBI`      | Vcc                           |
 |  8      | `GND`       | GND                           |
 |  9      | `/PCEI`     | GND                           |
 | 10      | `/SCEI`     | GND                           |
 | 12      | `/CLR`      | Arduino output pin defined as `clr_pin` in constructor                                             |
-| 13      | `DP`        | HIGH: On, LOW: Off            |
+| 13      | `DP`        | Vcc: On, GND: Off             |
 | 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor |
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
-| 16      | `VCC`       | +5V                           |
+| 16      | `VCC`       | Vcc                           |
 
 #### Multi-Digit Display
 
