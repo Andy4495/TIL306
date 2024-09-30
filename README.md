@@ -1,7 +1,7 @@
 # TIL306 / TIL307 Library
 
 [![Arduino Compile Sketches](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/arduino-compile-sketches.yml)
-[![Check Markdown Links](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/CheckMarkdownLinks.yml)
+[![Check Markdown Links](https://github.com/Andy4495/TIL306/actions/workflows/check-links.yml/badge.svg)](https://github.com/Andy4495/TIL306/actions/workflows/check-links.yml)
 
 Arduino library to control Texas Instruments TIL306 (decimal point on left) and TIL307 (decimal point on right) numeric LED displays.
 
