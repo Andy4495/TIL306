@@ -9,14 +9,14 @@ Arduino library to control Texas Instruments TIL306 (decimal point on left) and 
 
 ### Control Pins
 
-As few as one or as many as four output pins are needed to control the display, as noted below:
+As few as one or as many as four output pins are needed to control the display. Some control pins can be hardwired to a specific setting, with the effect noted below.
 
-| LED Pin | Signal | Name         | Required | Notes                                                     |
-| ------- | ------ | ------------ | ---------| --------------------------------------------------------- |
-|    15   | `CLK`  | Clock        |    Yes   | Required by the library to control the display.           |
-|    14   |  `BI`  | Blanking     |     No   | May be hardwired LOW to keep the display on all the time. |
-|    12   | `CLR`  | Clear        |     No   | May be hardwired HIGH, but the display cannot be forced to zero. |
-|     5   |  `LS`  | Latch Strobe |     No   | May be hardwired LOW, but some display flicker may be visible when the display is updated with a new value. |
+| LED Pin | Signal | Name         | Required | Hardwire Setting | Hardwire Effect                                                                  |
+| ------- | ------ | ------------ | -------- | ---------------- | -------------------------------------------------------------------------------- |
+|    15   | `CLK`  | Clock        |    Yes   | N/A              | Required by the library to control the display                                   |
+|    14   |  `BI`  | Blanking     |     No   | LOW              | Keep the display on all the time                                                 |
+|    12   | `CLR`  | Clear        |     No   | HIGH             | Display cannot be forced to zero                                                 |
+|     5   |  `LS`  | Latch Strobe |     No   | LOW              | Some display flicker may be visible when the display is updated with a new value |
 
 If any of the optional pins are hardwired, use `TIL306::NO_PIN` as the pin number in the constructor.
 
@@ -100,18 +100,18 @@ myLED = TIL306(clk_pin, TIL306::NO_PIN, TIL306::NO_PIN, TIL306::NO_PIN);
 
 Connect the pins as follows (pins not listed should be left floating):
 
-| LED Pin | Signal Name | Connect To                    |
-| ------- | ----------- | ----------------------------- |
-|  5      | `/LS`       | GND                           |
-|  6      | `/RBI`      | Vcc                           |
-|  8      | `GND`       | GND                           |
-|  9      | `/PCEI`     | GND                           |
-| 10      | `/SCEI`     | GND                           |
-| 12      | `/CLR`      | Vcc                           |
-| 13      | `DP`        | Vcc: On, GND: Off             |
-| 14      | `BI`        | GND                           |
+| LED Pin | Signal Name | Connect To                                             |
+| ------- | ----------- | ------------------------------------------------------ |
+|  5      | `/LS`       | GND                                                    |
+|  6      | `/RBI`      | Vcc                                                    |
+|  8      | `GND`       | GND                                                    |
+|  9      | `/PCEI`     | GND                                                    |
+| 10      | `/SCEI`     | GND                                                    |
+| 12      | `/CLR`      | Vcc                                                    |
+| 13      | `DP`        | Vcc: On, GND: Off                                      |
+| 14      | `BI`        | GND                                                    |
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
-| 16      | `VCC`       | Vcc                           |
+| 16      | `VCC`       | Vcc                                                    |
 
 #### Single Digit Using All Control Pins
 
@@ -125,18 +125,18 @@ myLED = TIL306(clk_pin, bi_pin, clr_pin, ls_pin);
 
 Connect the pins as follows:
 
-| LED Pin | Signal Name | Connect To                    |
-| ------- | ----------- | ----------------------------- |
-|  5      | `/LS`       | Arduino output pin defined as `ls_pin` in constructor |
-|  6      | `/RBI`      | Vcc                           |
-|  8      | `GND`       | GND                           |
-|  9      | `/PCEI`     | GND                           |
-| 10      | `/SCEI`     | GND                           |
-| 12      | `/CLR`      | Arduino output pin defined as `clr_pin` in constructor                                             |
-| 13      | `DP`        | Vcc: On, GND: Off             |
-| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor |
+| LED Pin | Signal Name | Connect To                                             |
+| ------- | ----------- | ------------------------------------------------------ |
+|  5      | `/LS`       | Arduino output pin defined as `ls_pin` in constructor  |
+|  6      | `/RBI`      | Vcc                                                    |
+|  8      | `GND`       | GND                                                    |
+|  9      | `/PCEI`     | GND                                                    |
+| 10      | `/SCEI`     | GND                                                    |
+| 12      | `/CLR`      | Arduino output pin defined as `clr_pin` in constructor |
+| 13      | `DP`        | Vcc: On, GND: Off                                      |
+| 14      | `BI`        | Arduino output pin defined as `bi_pin` in constructor  |
 | 15      | `CLK`       | Arduino output pin defined as `clk_pin` in constructor |
-| 16      | `VCC`       | Vcc                           |
+| 16      | `VCC`       | Vcc                                                    |
 
 #### Multi-Digit Display
 
@@ -155,7 +155,7 @@ Note that the above diagram has the least significant digit `RBI` (LED pin 6) co
 
 The software and other files in this repository are released under what is commonly called the [MIT License][100]. See the file [`LICENSE.txt`][101] in this repository.
 
-[1]: http://cdn.goldmine-elec.com/datasheet/G25577.pdf
+[1]: https://docs.rs-online.com/8d11/0900766b80025603.pdf
 [2]: ./extras/docs/TIL306-N-digit.jpg
 [3]: https://archive.org/details/optoelectronicsd00texa
 [4]: ./examples/
@@ -164,3 +164,4 @@ The software and other files in this repository are released under what is commo
 [//]: # ([200]: https://github.com/Andy4495/TIL306)
 
 [//]: # (This is a way to hack a comment in Markdown. This will not be displayed when rendered.)
+[//]: # ([1]: http://cdn.goldmine-elec.com/datasheet/G25577.pdf)
